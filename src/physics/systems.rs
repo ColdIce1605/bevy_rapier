@@ -123,23 +123,23 @@ fn sync_transform_2d(pos: Isometry<f32>, scale: f32, transform: &mut Mut<Transfo
     *transform.translation_mut().y_mut() = pos.translation.vector.y * scale;
 
     let rot = na::UnitQuaternion::new(na::Vector3::z() * pos.rotation.angle());
-    transform.set_rotation(Quat::from_xyzw(rot.i, rot.j, rot.k, rot.w));
+    transform.rotation = Quat::from_xyzw(rot.i, rot.j, rot.k, rot.w);
 }
 
 fn sync_transform_3d(pos: Isometry<f32>, scale: f32, transform: &mut Mut<Transform>) {
-    transform.set_translation(
-        Vec3::new(
-            pos.translation.vector.x,
-            pos.translation.vector.y,
-            pos.translation.vector.z,
-        ) * scale,
-    );
-    transform.set_rotation(Quat::from_xyzw(
-        pos.rotation.i,
-        pos.rotation.j,
-        pos.rotation.k,
-        pos.rotation.w,
-    ));
+    transform.translation = 
+                Vec3::new(
+                    pos.translation.vector.x,
+                    pos.translation.vector.y,
+                    pos.translation.vector.z,
+                ) * configuration.scale;
+    
+    transform.rotation = (Quat::from_xyzw(
+                pos.rotation.i,
+                pos.rotation.j,
+                pos.rotation.k,
+                pos.rotation.w,
+            ));
 }
 
 /// System responsible for writing the rigid-bodies positions into the Bevy translation and rotation components.
@@ -165,10 +165,10 @@ pub fn sync_transform_system(
             // Predict position and orientation at render time
             let pos = previous_pos.0.lerp_slerp(&rb.position, alpha);
             #[cfg(feature = "dim2")]
-            sync_transform_2d(pos, configuration.scale, &mut transform);
+            sync_transform_2d(pos, configuration.scale, &mut Transform);
 
             #[cfg(feature = "dim3")]
-            sync_transform_3d(pos, configuration.scale, &mut transform);
+            sync_transform_3d(pos, configuration.scale, &mut Transform);
         }
     }
     for (rigid_body, mut transform) in &mut direct_query.iter() {
