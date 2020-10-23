@@ -82,14 +82,14 @@ pub fn create_collider_renders_system(
                 // However PbrComponents automatically adds a Scale component. So
                 // we add each of its field manually except for Scale.
                 // That's a bit messy so surely there is a better way?
-                let ground_pbr = PbrComponents {
+                /*let ground_pbr = PbrComponents {
                     mesh: meshes.add(mesh),
                     material: materials.add(color.into()),
                     transform: Transform::from_non_uniform_scale(scale),
                     ..Default::default()
                 };
 
-                commands.insert(entity, ground_pbr);
+                commands.insert(entity, ground_pbr);*/
             }
         }
     }
